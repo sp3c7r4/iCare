@@ -1,3 +1,7 @@
 // import express from 'express'
 
-console.log('Hello via Bun!');
+// const app = express();
+
+// app.get((req, res) => {
+//   res.send("Hello")
+// })
