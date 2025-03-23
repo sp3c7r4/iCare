@@ -9,6 +9,8 @@ const env = {
   DB_NAME: process.env.DB_NAME as string,
   DB_DIALECT: process.env.DB_DIALECT as Dialect,
   DB_HOST: process.env.DB_HOST as string,
+  PORT: Number(process.env.PORT),
+  MONGO_URI: process.env.MONGO_URI as string,
 }
 
 export default env;

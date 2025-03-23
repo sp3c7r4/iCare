@@ -1,7 +1,10 @@
+import mongoose from "mongoose";
 import env from "./env";
 import { Sequelize } from "sequelize";
+import Logger from "../utils/logger";
 
-const sequelize = new Sequelize(
+
+export const sequelize = new Sequelize(
   env.DB_NAME,
   env.DB_USER,
   env.DB_USER_PASSWORD,
@@ -12,11 +15,20 @@ const sequelize = new Sequelize(
   }
 )
 
-export const connectDB = async () => {
+export const connectSQL = async () => {
   try {
     await sequelize.authenticate();
-    console.log("✅ Database connected successfully!");
+    Logger.log("✅ Relational Database connected successfully!");
   } catch (error) {
     console.error("❌ Database connection error:", error);
   }
 };
+
+export const connectNoSQL = async() => {
+  try {
+    await mongoose.connect(env.MONGO_URI, {});
+    Logger.log("✅ NoSQL Database connected successfully!");
+  } catch (error) {
+    console.error("❌ Database connection error:", error);
+  }
+}
