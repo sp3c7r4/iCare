@@ -1,8 +1,8 @@
+import bcrypt from "bcryptjs";
 import CustomError from "../utils/error";
 import errorHelper from "../utils/errorHelper";
 import HttpStatus from "../utils/http";
 import logTracker from "../utils/logTracker";
-
 class baseRepository {
   private model: any;
 
@@ -10,7 +10,15 @@ class baseRepository {
     this.model = model;
   }
 
-  validateDataCheck(data: object) {
+  async encryptPassword(data: object & { password: string }) {
+      if (data.password) {
+        data.password = await bcrypt.hash(data.password, 10)
+        return data
+      }
+      return data
+    }
+
+  validateDataCheck(data: object): void {
     if( !data || Object.keys(data).length === 0 ) {
       throw new CustomError("No data provided!!!", HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status)
     }
@@ -19,11 +27,12 @@ class baseRepository {
   async create(data: object): Promise<object> {
     this.validateDataCheck(data);
     try {
-      return await this.model.create(data);
+      const encryptPassword = await this.encryptPassword(data as object & { password: string })
+      return await this.model.create(encryptPassword);
     } catch (err) {
       logTracker.log( 'info', JSON.stringify(errorHelper.returnErrorLog(err)) );
       throw new CustomError(
-        err.message,
+        err instanceof Error ? err.message : "Unknown Error Provided",
         HttpStatus.INTERNAL_SERVER_ERROR.code,
         HttpStatus.INTERNAL_SERVER_ERROR.status
       );

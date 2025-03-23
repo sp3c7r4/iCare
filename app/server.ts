@@ -10,14 +10,16 @@ const app = express();
 app.use(express.json());
 
 /** Database Connection */
-connectSQL();
-connectNoSQL();
+connectSQL(); /* Connect to PostGreSQL */
+connectNoSQL(); /* Connect to MongDB */
 
 app.get('/', (req: Request, res: Response) => {
   res.status(201).json(env);
 });
 
-app.use(userRoutes);
+/* User Routes */
+app.use('/api/v1/user/', userRoutes);
+
 /** Handles Error */
 app.use(errorHandler);
 app.listen(env.PORT, () => {

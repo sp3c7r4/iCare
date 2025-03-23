@@ -1,7 +1,6 @@
 import { Model, DataTypes } from "sequelize";
 import { sequelize } from "../config/database";
 import { ulid } from "ulid";
-import Logger from "../utils/logger";
 
 class User extends Model {
   // public id!: string;
