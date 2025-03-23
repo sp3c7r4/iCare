@@ -1,15 +1,14 @@
 import { model, Schema } from "mongoose";
-import { ulid } from "ulid";
+import { getFormattedDate } from "../utils/utility";
 
 const chatSchema = new Schema(
   {
-    _id: { type: String, default: ulid },
     user_id: { type: String, required: true },
     history: [
       {
         user: { type: String, required: true },
         model: { type: String, required: true },
-        timestamp: { type: Date, default: Date.now },
+        timestamp: { type: Date, default: () => getFormattedDate()},
       },
     ],
   },

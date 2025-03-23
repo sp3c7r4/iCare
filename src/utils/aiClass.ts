@@ -30,44 +30,31 @@ const generationConfig = {
   responseMimeType: "text/plain",
 };
 
-async function run() {
-  const chatSession = model.startChat({
-    generationConfig,
-    history: [
-    ],
-  });
-
-  const result = await chatSession.sendMessage("INSERT_INPUT_HERE");
-  console.log(result.response.text());
-}
-
-run();
-
 export default class Ai {
   input: string;
+  user_id: string
 
-  constructor (input: string) {
+  constructor (input: string, user_id: string) {
     this.input = input
+    this.user_id = user_id
   }
 
   async fetchChatHistory(): Promise<object[]> {
-    return await ChatRepository.readAllChats();
+    return await ChatRepository.readAllChats()
   }
 
   async generateResponse() {
-    const fetchChatHistory = await this.fetchChatHistory()
+    // const fetchChatHistory = await this.fetchChatHistory()
     const chatSession = model.startChat({ 
       generationConfig,
-      history: fetchChatHistory.map((output: {role: string, text: string}) => ({
-      role: output.role,
-      parts: [{ text: output.text }],
-      })),
+      history: []
+      // fetchChatHistory.map(output => ({
+      // role: output.role,
+      // parts: [{ text: output.text }],
+      // })),
     });
-    const result = await chatSession.sendMessageStream("Tell me the nigerian national anthem");
-    for await(const chunk of result.stream) {
-      const chunkText = chunk.text();
-      console.log(chunkText);
-    }
+    const result = await chatSession.sendMessage(this.input);
+    return result.response.text();
   }
 
   makeDecision() {
