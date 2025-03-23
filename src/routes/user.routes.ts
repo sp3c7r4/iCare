@@ -14,4 +14,6 @@ router.post('/test', tryCatch( async (req: Request, res: Response) => {
   const response = await startChat(text, user_id);
   res.send(response);
 }))
+
+
 export default router;

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Test Client</title>
+</head>
+<body>
+    <h1>Socket.IO Test Client</h1>
+    <input type="text" id="message" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+    <button onclick="disconnect()">Disconnect</button>
+    <div id="output"></div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const socket = io('http://127.0.0.1:3000'); // Replace with your server URL
+
+        socket.on('connect', () => {
+            document.getElementById('output').innerHTML += '<p>Connected to Socket.IO server</p>';
+        });
+
+        socket.on('message', (data) => {
+            document.getElementById('output').innerHTML += `<p>Server: ${data}</p>`;
+        });
+
+        socket.on('response', (data) => {
+            document.getElementById('output').innerHTML += `<p>Server: ${data.message}</p>`;
+        });
+
+        socket.on('disconnect', () => {
+            document.getElementById('output').innerHTML += '<p>Disconnected from Socket.IO server</p>';
+        });
+
+        function sendMessage() {
+            const message = document.getElementById('message').value;
+            socket.emit('message', message);
+            document.getElementById('output').innerHTML += `<p>You: ${message}</p>`;
+        }
+
+        function disconnect() {
+            socket.disconnect();
+        }
+    </script>
+</body>
+</html>
