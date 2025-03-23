@@ -14,10 +14,4 @@ router.post('/test', tryCatch( async (req: Request, res: Response) => {
   const response = await startChat(text, user_id);
   res.send(response);
 }))
-
-// router.post('/add', async (req: Request, res: Response) => {
-//   await startChat(text);
-//   res.send("Done");
-//   // res.status(register.statusCode).send(register);
-// })
 export default router;

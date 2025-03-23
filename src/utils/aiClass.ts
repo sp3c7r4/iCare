@@ -39,27 +39,26 @@ export default class Ai {
     this.user_id = user_id
   }
 
-  async fetchChatHistory(): Promise<object[]> {
-    return await ChatRepository.readAllChats()
+  async fetchChatHistory(): Promise<{user: string, model: string, timestamp: Date}[] | []> {
+    return await ChatRepository.readChatsById(this.user_id);
   }
 
   async generateResponse() {
-    // const fetchChatHistory = await this.fetchChatHistory()
+    const fetchChatHistory = await this.fetchChatHistory()
+    console.log(fetchChatHistory)
+    const history = fetchChatHistory.flatMap(({ user, model }) => [
+      { role: "user", parts: [{ text: user }] },
+      { role: "model", parts: [{ text: model }] },
+    ]);
     const chatSession = model.startChat({ 
       generationConfig,
-      history: []
-      // fetchChatHistory.map(output => ({
-      // role: output.role,
-      // parts: [{ text: output.text }],
-      // })),
+      history
     });
     const result = await chatSession.sendMessage(this.input);
     return result.response.text();
   }
 
-  makeDecision() {
-
-  }
+  makeDecision() { }
 
 }
 

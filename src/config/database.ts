@@ -20,7 +20,7 @@ export const connectSQL = async () => {
     await sequelize.authenticate();
     Logger.log("✅ Relational Database connected successfully!");
   } catch (error) {
-    console.error("❌ Database connection error:", error);
+    Logger.error(`❌ SQL Database connection error: ${error}`);
   }
 };
 
@@ -29,6 +29,6 @@ export const connectNoSQL = async() => {
     await mongoose.connect(env.MONGO_URI, {});
     Logger.log("✅ NoSQL Database connected successfully!");
   } catch (error) {
-    console.error("❌ Database connection error:", error);
+    Logger.error(`❌ NoSQL Database connection error: ${error}`);
   }
 }
