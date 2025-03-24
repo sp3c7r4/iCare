@@ -19,12 +19,18 @@ startSocketServer(server);
 connectSQL(); /* Connect to PostGreSQL */
 connectNoSQL(); /* Connect to MongDB */
 
+/* User Routes */
+app.use('/api/v1/user/', userRoutes);
+
 app.get('/', (req: Request, res: Response) => {
   res.status(201).json(env);
 });
 
-/* User Routes */
-app.use('/api/v1/user/', userRoutes);
+// Metrics endpoint
+// app.get("/metrics", async (req: Request, res: Response) => {
+//   // res.set("Content-Type", register.contentType);
+//   // res.end(await register.metrics());
+// });
 
 /** Handles Error */
 app.use(errorHandler);

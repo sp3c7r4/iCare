@@ -1,7 +1,9 @@
 import { model, Schema } from "mongoose";
 import { getFormattedDate } from "../utils/utility";
+import { metric } from "../utils/metrics";
+import Logger from "../utils/logger";
 
-const chatSchema = new Schema(
+export const chatSchema = new Schema(
   {
     user_id: { type: String, required: true },
     chat_id: {type: String, required: true, default: () => getFormattedDate() },
@@ -18,6 +20,18 @@ const chatSchema = new Schema(
   }
 );
 
-const Chats = model("Chats", chatSchema);
+/*
+  * 2 Event Handlers for Read and Write Operations
+*/
+chatSchema.post('find' || 'findOne', function() {
+  Logger.log("Database Read")
+  metric.writeToDB1();
+});
 
+chatSchema.post('findOneAndUpdate' , function() {
+  Logger.log("Database Writted to")
+  metric.writeToDB1();
+});
+
+const Chats = model("Chats", chatSchema);
 export default Chats;

@@ -58,7 +58,7 @@ export default class Ai {
     return result.response.text();
   }
 
-  static async audioToText(data) {
+  static async audioToText(data: any) {
     // Send audio to Gemini AI for transcription
     const result = await model.generateContent([
         { role: "user", parts: [{ inlineData: { mimeType: "audio/webm", data: data.toString("base64") } }] }

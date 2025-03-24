@@ -1,6 +1,7 @@
 import { Model, DataTypes } from "sequelize";
 import { sequelize } from "../config/database";
 import { ulid } from "ulid";
+import { metric } from "../utils/metrics";
 
 class User extends Model {
   // public id!: string;
@@ -42,6 +43,23 @@ User.init({
   modelName: "User",
   timestamps: true,
 })
+
+/* * 4 Event Handlers for Read and Write Operations */
+User.afterCreate(() => {
+  metric.writeToDB1()
+})
+
+User.afterDestroy(() => {
+  metric.writeToDB1()
+})
+
+User.afterUpdate(() => {
+  metric.writeToDB1()
+})
+
+User.afterFind(() => {
+  metric.readFromDB1();
+});
 
 await User.sync({});
 export default User;

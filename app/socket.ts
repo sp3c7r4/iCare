@@ -48,6 +48,7 @@ const startSocketServer = (server: HttpServer) => {
     });
 
     const chunks: Buffer[] = [];
+
     socket.on('startStream', async (data) => {
       console.log('New transcription');
       console.log('Received audio chunk:', data.audio[0]);

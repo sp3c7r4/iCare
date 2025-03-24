@@ -43,7 +43,8 @@
     "prepare": "husky install",
     "lint": "eslint app/**/*.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:dev": "bun --watch run app/server.ts"
+    "start:dev": "bun --watch run app/server.ts",
+    "start:node-dev": "nodemon --exec npx ts-node app/server.ts"
   },
   "lint-staged": {
     "app/**/*.ts": [
