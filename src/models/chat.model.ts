@@ -25,12 +25,12 @@ export const chatSchema = new Schema(
 */
 chatSchema.post('find' || 'findOne', function() {
   Logger.log("Database Read")
-  metric.writeToDB1();
+  metric.readFromDB2();
 });
 
 chatSchema.post('findOneAndUpdate' , function() {
   Logger.log("Database Writted to")
-  metric.writeToDB1();
+  metric.writeToDB2();
 });
 
 const Chats = model("Chats", chatSchema);

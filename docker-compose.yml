@@ -1,14 +1,30 @@
 version: "3.8"
 
 services:
-  bun-app:
-    build: .
-    container_name: bun-server
-    restart: always
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
     ports:
-      - "3000:3000"
-    env_file:
-      - .env
+      - "3001:3000"
+    networks:
+      - monitoring
+    depends_on:
+      - prometheus
     volumes:
-      - .:/app
-      - /app/node_modules
+      - grafana-data:/var/lib/grafana
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "8000:9090"
+    networks:
+      - monitoring
+    volumes:
+      - ./prometheus.yml:/prometheus/prometheus.yml
+    # command: prometheus --config.file=prometheus.yml
+
+volumes:
+  grafana-data:
+networks:
+  monitoring:

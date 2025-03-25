@@ -1,4 +1,4 @@
-const counters = { db1Reads: 0, db1Writes: 0, db2Reads: 0, db2Writes: 0 }
+export const counters = { db1Reads: 0, db1Writes: 0, db2Reads: 0, db2Writes: 0 }
 
 export const metric = {
   readFromDB1: function () {
@@ -17,4 +17,10 @@ export const metric = {
     counters.db2Writes += 1;
     console.log(counters)
   },
+  memoryUsage: function () { 
+    return process.memoryUsage() 
+  },
+  cpuUsage: function() { 
+    return process.cpuUsage() 
+  }
 }
