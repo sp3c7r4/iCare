@@ -1,4 +1,4 @@
-import baseRepository from "./baseRepositoryNoSQL";
+import BaseRepositoryNoSQL from "./baseRepositoryNoSQL";
 import Chats from "../models/chat.model";
 import CustomError from "../utils/error";
 import HttpStatus from "../utils/http";
@@ -6,15 +6,9 @@ import logTracker from "../utils/logTracker";
 import errorHelper from "../utils/errorHelper";
 import { getFormattedDate } from "../utils/utility";
 
-export default class ChatRepository {
-
-  static getModelInstance() {
-    return new baseRepository(Chats);
-  }
-
-  static async readAllChats(): Promise<object[]> {
-    const baseRepository = this.getModelInstance()
-    return await baseRepository.readAll()
+export default class ChatRepository extends BaseRepositoryNoSQL {
+  constructor() {
+    super(Chats)
   }
 
   static async readChatsById(user_id: string): Promise<{user: string, model: string, timestamp: Date}[] | []> {

@@ -3,7 +3,7 @@ import CustomError from "../utils/error";
 import errorHelper from "../utils/errorHelper";
 import HttpStatus from "../utils/http";
 import logTracker from "../utils/logTracker";
-class baseRepository {
+export default class BaseRepositoryNoSQL {
   private model: any;
 
   constructor(model: any) {
@@ -120,5 +120,3 @@ class baseRepository {
     }
   }
 }
-
-export default baseRepository;
