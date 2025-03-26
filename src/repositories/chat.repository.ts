@@ -11,13 +11,13 @@ export default class ChatRepository extends BaseRepositoryNoSQL {
     super(Chats)
   }
 
-  static async readChatsById(user_id: string): Promise<{user: string, model: string, timestamp: Date}[] | []> {
+    static async readChatsById(user_id: string): Promise<{user: string, model: string, timestamp: Date}[] | []> {
     const generateChatId = getFormattedDate();
     const chat = await Chats.findOne({ user_id, chat_id:generateChatId });
     return chat ? chat.history.map(({ user, model, timestamp }) => ({ user, model, timestamp })) : [];
   }
 
-  static async createChat(user_id: string, user: string, ai: string): Promise<object> {
+    static async createChat(user_id: string, user: string, ai: string): Promise<object> {
     try {
       const generateChatId = getFormattedDate();
       return await Chats.findOneAndUpdate(
@@ -31,5 +31,5 @@ export default class ChatRepository extends BaseRepositoryNoSQL {
         HttpStatus.INTERNAL_SERVER_ERROR.status
       );
     }
-}
+  }
 }

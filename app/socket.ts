@@ -7,6 +7,7 @@ import {
   HarmBlockThreshold,
   HarmCategory,
 } from '@google/generative-ai';
+import Ai from '../src/utils/AiClass';
 
 const startSocketServer = (server: HttpServer) => {
   Logger.server('Socket Server Started 🥙');
@@ -65,7 +66,7 @@ const startSocketServer = (server: HttpServer) => {
       const base64Audio = audioBuffer.toString('base64'); // Convert Buffer to base64
       console.log(base64Audio);
       console.log('Audio buffer created');
-
+      Ai.textToAudio("Hello, I'm Alexa.");
       // Send the base64-encoded audio to Gemini
       try {
         const result = await model.generateContent([

@@ -1,6 +1,6 @@
 import ChatRepository from "../repositories/chat.repository"
 import UserRepository from "../repositories/user.repository"
-import Ai from "../utils/aiClass"
+import Ai from '../utils/AiClass';
 import HttpStatus from "../utils/http"
 import Response from "../utils/response"
 

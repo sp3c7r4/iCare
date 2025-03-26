@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 import env from "../config/env";
 import ChatRepository from "../repositories/chat.repository";
+import { synthesizeSpeech } from "./pollyHelper";
 
 const apiKey = env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -67,6 +68,10 @@ export default class Ai {
     const transcript = result.response.text();
     console.log("Transcription:", transcript);
     return transcript;
+  }
+
+  static async textToAudio(text: string) {
+    return await synthesizeSpeech(text)
   }
 
   makeDecision() { }
