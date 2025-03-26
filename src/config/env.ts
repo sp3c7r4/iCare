@@ -14,6 +14,9 @@ const env = {
   GEMINI_API_KEY: process.env.GEMINI_API_KEY as string,
   AMAZON_SECRET_KEY: process.env.AMAZON_SECRET_KEY as string,
   AMAZON_ACCESS_KEY: process.env.AMAZON_ACCESS_KEY as string,
+  REDIS_HOST: process.env.REDIS_HOST as string,
+  REDIS_PORT: Number(process.env.REDIS_PORT),
+  REDIS_TIME: Number(process.env.REDIS_TIME)
 }
 
 export default env;

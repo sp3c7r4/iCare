@@ -8,7 +8,9 @@ import userRoutes from './../src/routes/user.routes';
 import startSocketServer from './socket';
 import { createServer } from 'http';
 import { counters } from '../src/utils/metrics';
+import { get, set } from '../src/config/redis';
 
+// redis.connect()
 const app = express();
 const server = createServer(app);
 app.use(express.json());
@@ -19,11 +21,24 @@ startSocketServer(server);
 /** Database Connection */
 connectSQL(); /* Connect to PostGreSQL */
 connectNoSQL(); /* Connect to MongDB */
+// redis.connect()
 
 /* User Routes */
 app.use('/api/v1/user/', userRoutes);
 
 app.get('/', (req: Request, res: Response) => {
+  // Simulated fresh data
+  const freshData = { movies: ['Film1s', 'Film2'] };
+
+  // Store in Redis for 60s
+  set('movies', JSON.stringify(freshData), 6000);
+  res.status(201).json(env);
+});
+
+app.get('/get', async (req: Request, res: Response) => {
+  const cachedData = await get('movies');
+  console.log(cachedData);
+  if (cachedData) return res.status(200).json(JSON.parse(cachedData)); // Cache hit
   res.status(201).json(env);
 });
 

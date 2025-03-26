@@ -53,7 +53,7 @@ const startSocketServer = (server: HttpServer) => {
     socket.on('startStream', async (data) => {
       console.log('New transcription');
       console.log('Received audio chunk:', data.audio[0]);
-      chunks.push(Buffer.from(data.audio, 'base64')); // Convert base64 chunk to Buffer
+      chunks.push(Buffer.from(data.audio, 'base64'));
       console.log(chunks.length);
       return;
     });

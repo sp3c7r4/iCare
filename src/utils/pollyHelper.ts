@@ -24,6 +24,8 @@ export const synthesizeSpeech = async (text: string, voiceId: string = "Joanna",
     if (response.AudioStream) {
       // Save the audio stream to a file
       const audioBuffer = Buffer.from(await response.AudioStream.transformToByteArray());
+      const base64Audio = audioBuffer.toString('base64');
+      console.log("Base64 Audio:", base64Audio);
       await writeFile(outputFilePath, audioBuffer);
       console.log(`Audio saved to ${outputFilePath}`);
       return outputFilePath;
