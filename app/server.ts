@@ -8,7 +8,7 @@ import userRoutes from './../src/routes/user.routes';
 import startSocketServer from './socket';
 import { createServer } from 'http';
 import { counters } from '../src/utils/metrics';
-import { get, set } from '../src/config/redis';
+import { cacheGet, cacheSet } from '../src/config/redis';
 
 // redis.connect()
 const app = express();
@@ -31,12 +31,12 @@ app.get('/', (req: Request, res: Response) => {
   const freshData = { movies: ['Film1s', 'Film2'] };
 
   // Store in Redis for 60s
-  set('movies', JSON.stringify(freshData), 6000);
+  cacheSet('movies', JSON.stringify(freshData), 6000);
   res.status(201).json(env);
 });
 
 app.get('/get', async (req: Request, res: Response) => {
-  const cachedData = await get('movies');
+  const cachedData = await cacheGet('movies');
   console.log(cachedData);
   if (cachedData) return res.status(200).json(JSON.parse(cachedData)); // Cache hit
   res.status(201).json(env);

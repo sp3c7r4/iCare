@@ -10,12 +10,12 @@ const redis = new Redis({
 redis.on("connect", () => Logger.server("✅ Redis Cache connected successfully!"));
 redis.on("error", (err: Error) => Logger.server(`Redis error: ${err}`));
 
-export const set = async (key: string, value: string, time: number) => {
+export const cacheSet = async (key: string, value: string, time: number) => {
   const store = await redis.setex(key, time, JSON.stringify(value))
   Logger.log(store)
 }
 
-export const get = async (key: string) => {
+export const cacheGet = async (key: string) => {
   const result = await redis.get(key);
   return result ? JSON.parse(result) : null;
 }
