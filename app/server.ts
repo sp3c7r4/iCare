@@ -35,7 +35,7 @@ app.get('/', (req: Request, res: Response) => {
   res.status(201).json(env);
 });
 
-app.get('/get', async (_, res: Response) => {
+app.get('/get', async (req: Request, res: Response) => {
   const cachedData = await cacheGet('movies');
   console.log(cachedData);
   if (cachedData) return res.status(200).json(JSON.parse(cachedData)); // Cache hit
