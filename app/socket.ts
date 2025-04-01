@@ -1,7 +1,9 @@
 import { Server } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import Logger from '../src/utils/logger';
-import Ai from '../src/utils/Ai';
+import fs from 'fs';
+
+// const deepgram = createClient("ba0574fe05afe2315ac747f0796fd4aab2a2d7fe");
 
 const startSocketServer = (server: HttpServer) => {
   Logger.server('Socket Server Started 🥙');
@@ -13,41 +15,27 @@ const startSocketServer = (server: HttpServer) => {
   });
 
   io.on('connection', (socket) => {
-    console.log('New WebSocket connection');
-    socket.on('message', (data) => {
-      console.log('Received:', data);
-      socket.emit('response', { message: 'Hello, client!' });
-    });
+    console.log('New WebSocket connection', socket.id);
 
     const chunks: Buffer[] = [];
 
     socket.on('startStream', async (data) => {
-      console.log('New transcription');
-      console.log('Data Type', typeof data);
-      console.log('Received audio chunk:', data.audio[0]);
-      chunks.push(Buffer.from(data.audio, 'base64'));
-      console.log(chunks.length);
-      return;
+      console.log('Received audio chunk');
+      chunks.push(Buffer.from(data.audio, 'base64')); // Decode Base64 audio chunk
     });
 
     socket.on('endStream', async (data) => {
-      console.log('Audio stream ended', data.message);
+      console.log('Audio stream ended', data);
 
       // Combine all chunks into a single Buffer
-      const audioBuffer = Buffer.concat(chunks);
-      const base64Audio = audioBuffer.toString('base64'); // Convert Buffer to base64
-      console.log(base64Audio);
-      console.log('Audio buffer created');
-      // Send the base64-encoded audio to Gemini
-      try {
-        const transcript = await Ai.audioToText(base64Audio);
-        Ai.textToAudio(transcript);
-        console.log('Transcription:', transcript);
-        socket.emit('transcription', transcript); // Send the transcription back to the client
-      } catch (error) {
-        console.error('Error processing audio stream:', error);
-        socket.emit('transcription', 'Error processing audio stream');
-      }
+      const audioBuffer: Buffer = Buffer.concat(chunks);
+
+      // Write the audio buffer to an MP4 file
+      const outputFilePath = 'output.mp3';
+      fs.writeFileSync(outputFilePath, audioBuffer);
+
+      console.log(`MP4 file created: ${outputFilePath}`);
+      socket.emit('transcription', `Audio saved as ${outputFilePath}`);
     });
   });
 };
