@@ -63,7 +63,7 @@ export default class Ai {
     console.log(typeof data)
     // Send audio to Gemini AI for transcription
     const result = await model.generateContent([
-        { inlineData: { mimeType: "audio/wav", data } }, { text: 'Generate a transcript of the speech.' }
+        { inlineData: { mimeType: "audio/webm", data } }, { text: 'Generate a transcript of the speech.' }
     ]);
 
     const transcript = result.response.text();
