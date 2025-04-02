@@ -14,42 +14,53 @@
 
     <script>
         let socket, mediaRecorder;
-    
+
         document.getElementById('start').addEventListener('click', async () => {
-            socket = io("http://localhost:3000"); // Your Socket.IO Server
-    
+            // Initialize Socket.IO connection
+            socket = io("http://localhost:3000"); // Replace with your server URL
+
+            // Listen for transcription results from the server
             socket.on("transcription", (data) => {
                 document.getElementById('output').innerHTML += `<p>AI: ${data}</p>`;
             });
-    
+
+            // Request microphone access
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/mp3" }); // Use audio/mp4
-    
+
+            // Initialize MediaRecorder with audio/webm format
+            mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+
+            // Handle audio data chunks
             mediaRecorder.ondataavailable = async (event) => {
                 if (event.data.size > 0) {
-                    const arrayBuffer = await event.data.arrayBuffer();
-                    const base64Audio = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-                    socket.emit("startStream", { audio: base64Audio });
+                    socket.emit("audio", { audio: event.data });
                 }
             };
-    
-            mediaRecorder.start(1000); // Send audio chunks every second
+
+            // Start recording and send chunks every second
+            mediaRecorder.start(1000);
+
+            // Update button states
             document.getElementById('start').disabled = true;
             document.getElementById('stop').disabled = false;
         });
-    
+
         document.getElementById('stop').addEventListener('click', () => {
             if (socket) {
-                socket.emit("endStream", { message: "Stopped streaming", user_id: "3218920202" });
+                // Notify the server to stop streaming
+                socket.emit("close", { message: "Stopped streaming", user_id: "3218920202" });
+
+                // Disconnect the socket after a short delay
                 setTimeout(() => {
                     socket.disconnect();
                 }, 100); // 100ms delay
             }
-    
+
             if (mediaRecorder) {
                 mediaRecorder.stop();
             }
-    
+
+            // Update button states
             document.getElementById('start').disabled = false;
             document.getElementById('stop').disabled = true;
         });

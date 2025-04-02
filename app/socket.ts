@@ -2,8 +2,7 @@ import { Server } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import Logger from '../src/utils/logger';
 import fs from 'fs';
-
-// const deepgram = createClient("ba0574fe05afe2315ac747f0796fd4aab2a2d7fe");
+import path from 'path';
 
 const startSocketServer = (server: HttpServer) => {
   Logger.server('Socket Server Started 🥙');
@@ -15,27 +14,48 @@ const startSocketServer = (server: HttpServer) => {
   });
 
   io.on('connection', (socket) => {
-    console.log('New WebSocket connection', socket.id);
+    console.log('New client connected');
 
-    const chunks: Buffer[] = [];
+    // Define the file path for saving the audio
+    const recordingsDir = path.join(__dirname, 'recordings');
+    const filePath = path.join(recordingsDir, `recording-${Date.now()}.webm`);
 
-    socket.on('startStream', async (data) => {
+    // Ensure the recordings directory exists
+    if (!fs.existsSync(recordingsDir)) {
+      fs.mkdirSync(recordingsDir, { recursive: true });
+    }
+
+    // Create a writable stream for the audio file
+    const fileWriter = fs.createWriteStream(filePath);
+
+    socket.on('audio', (data) => {
       console.log('Received audio chunk');
-      chunks.push(Buffer.from(data.audio, 'base64')); // Decode Base64 audio chunk
+
+      // Decode Base64 audio and write to the file asynchronously
+      const audioBuffer = Buffer.from(data.audio, 'base64');
+      fileWriter.write(audioBuffer, (err) => {
+        if (err) {
+          console.error('Error writing audio chunk:', err);
+        }
+      });
     });
 
-    socket.on('endStream', async (data) => {
-      console.log('Audio stream ended', data);
+    socket.on('close', (data) => {
+      console.log('Stopped Recording:', data);
 
-      // Combine all chunks into a single Buffer
-      const audioBuffer: Buffer = Buffer.concat(chunks);
+      // End the writable stream
+      fileWriter.end(() => {
+        console.log(`Recording saved to ${filePath}`);
+      });
+    });
 
-      // Write the audio buffer to an MP4 file
-      const outputFilePath = 'output.mp3';
-      fs.writeFileSync(outputFilePath, audioBuffer);
+    socket.on('disconnect', () => {
+      console.log('Client disconnected');
 
-      console.log(`MP4 file created: ${outputFilePath}`);
-      socket.emit('transcription', `Audio saved as ${outputFilePath}`);
+      // Ensure the writable stream is closed
+      fileWriter.end(() => {
+        console.log(`Recording saved to ${filePath}`);
+      });
     });
   });
 };
