@@ -3,8 +3,11 @@ import { Server as HttpServer } from 'http';
 import Logger from '../src/utils/logger';
 import fs from 'fs';
 import path from 'path';
+import { createDirectory } from '../src/utils/utility';
+import AwsTools from '../src/utils/awsTools';
 
 const startSocketServer = (server: HttpServer) => {
+  // const audioChunks: string[] = []
   Logger.server('Socket Server Started 🥙');
   const io = new Server(server, {
     cors: {
@@ -14,48 +17,39 @@ const startSocketServer = (server: HttpServer) => {
   });
 
   io.on('connection', (socket) => {
-    console.log('New client connected');
+    console.log('Client connected');
 
-    // Define the file path for saving the audio
-    const recordingsDir = path.join(__dirname, 'recordings');
-    const filePath = path.join(recordingsDir, `recording-${Date.now()}.webm`);
+    socket.on('upload', async (data, callback) => {
+      const { file, fileName } = data;
 
-    // Ensure the recordings directory exists
-    if (!fs.existsSync(recordingsDir)) {
-      fs.mkdirSync(recordingsDir, { recursive: true });
-    }
+      if (!file || !fileName) {
+        callback({ success: false, error: 'Invalid file or fileName' });
+        return;
+      }
 
-    // Create a writable stream for the audio file
-    const fileWriter = fs.createWriteStream(filePath);
+      // Decode Base64 and save the file
+      const recordingsDir = createDirectory('recordings');
+      const filePath = path.join(recordingsDir, fileName);
+      const buffer = Buffer.from(file, 'base64');
 
-    socket.on('audio', (data) => {
-      console.log('Received audio chunk');
-
-      // Decode Base64 audio and write to the file asynchronously
-      const audioBuffer = Buffer.from(data.audio, 'base64');
-      fileWriter.write(audioBuffer, (err) => {
+      fs.writeFile(filePath, buffer, (err) => {
         if (err) {
-          console.error('Error writing audio chunk:', err);
+          console.error('Error saving file:', err);
+          callback({ success: false, error: 'Failed to save file' });
+        } else {
+          console.log('File saved successfully:', filePath);
+          callback({ success: true });
         }
       });
-    });
-
-    socket.on('close', (data) => {
-      console.log('Stopped Recording:', data);
-
-      // End the writable stream
-      fileWriter.end(() => {
-        console.log(`Recording saved to ${filePath}`);
-      });
+      const transcribe = await AwsTools.audioTranscribe2(filePath);
+      console.log(
+        'Transcribe: ',
+        transcribe?.results.channels[0].alternatives[0].transcript,
+      );
     });
 
     socket.on('disconnect', () => {
       console.log('Client disconnected');
-
-      // Ensure the writable stream is closed
-      fileWriter.end(() => {
-        console.log(`Recording saved to ${filePath}`);
-      });
     });
   });
 };
