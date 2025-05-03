@@ -1,4 +1,4 @@
-# icare
+# Chomsky
 
 To install dependencies:
 
