@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { type Response } from 'express';
 import Logger from '../src/utils/logger';
 import { address } from 'ip';
 import env from '../src/config/env';
@@ -24,6 +24,9 @@ connectNoSQL(); /* Connect to MongDB */
 /* User Routes */
 app.use('/api/v1/user/', userRoutes);
 
+app.get('/', (_, res: Response) => {
+  res.status(200).send('Server working perfectly...');
+});
 /** Handles Error */
 app.use(errorHandler);
 
