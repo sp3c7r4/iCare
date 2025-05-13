@@ -2,7 +2,7 @@ import express, { type Response } from 'express';
 import Logger from '../src/utils/logger';
 import { address } from 'ip';
 import env from '../src/config/env';
-import { connectNoSQL, connectSQL } from '../src/config/database';
+import { connectSQL } from '../src/config/database';
 import errorHandler from '../src/middlewares/errorMiddleWare';
 import userRoutes from './../src/routes/user.routes';
 import startSocketServer from './socket';
@@ -18,7 +18,7 @@ startSocketServer(server);
 
 /** Database Connection */
 connectSQL(); /* Connect to PostGreSQL */
-connectNoSQL(); /* Connect to MongDB */
+// connectNoSQL(); /* Connect to MongDB */
 // redis.connect()
 
 /* User Routes */
